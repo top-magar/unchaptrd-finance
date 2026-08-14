@@ -55,7 +55,7 @@ export function ExpenseDistribution({ transactions }: { transactions: Transactio
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '6px' }}
                   itemStyle={{ color: '#e4e4e7' }}
-                  formatter={(value: number) => [formatCurrency(value), undefined]}
+                  formatter={(value: any) => [formatCurrency(value), undefined]}
                 />
                 <Legend 
                   verticalAlign="bottom" 

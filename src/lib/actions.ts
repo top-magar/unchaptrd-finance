@@ -58,7 +58,7 @@ export async function getInventoryBatches() {
 // Sales
 export async function getSales() {
   return prisma.sale.findMany({
-    include: { items: { include: { product: true } } },
+    include: { items: true },
     orderBy: { date: 'desc' }
   })
 }

@@ -30,8 +30,8 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [partnerId, setPartnerId] = useState("");
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
+  const [partnerId, setPartnerId] = useState<string | undefined>(undefined);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -53,19 +53,21 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
       setAmount("");
       setDescription("");
       setPaymentMethod("");
-      setCategoryId("");
-      setPartnerId("");
+      setCategoryId(undefined);
+      setPartnerId(undefined);
     });
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="flex items-center text-sm font-medium text-zinc-950 bg-white hover:bg-zinc-200 px-4 py-2 rounded-md transition-colors">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Transaction
-        </button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Transaction
+          </Button>
+        }
+      />
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-zinc-200">
         <DialogHeader>
           <DialogTitle className="text-white">Record Transaction</DialogTitle>
@@ -73,7 +75,7 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="grid gap-2">
             <Label htmlFor="type">Transaction Type</Label>
-            <Select value={type} onValueChange={(val) => setType(val)}>
+            <Select value={type} onValueChange={(val) => setType(val || "EXPENSE")}>
               <SelectTrigger className="bg-zinc-900 border-zinc-800">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -128,7 +130,7 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
           {type === "EXPENSE" && (
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
-              <Select value={categoryId} onValueChange={setCategoryId}>
+              <Select value={categoryId} onValueChange={(val) => setCategoryId(val || undefined)}>
                 <SelectTrigger className="bg-zinc-900 border-zinc-800">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -146,7 +148,7 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
           {type === "CAPITAL" && (
             <div className="grid gap-2">
               <Label htmlFor="partner">Partner</Label>
-              <Select value={partnerId} onValueChange={setPartnerId}>
+              <Select value={partnerId} onValueChange={(val) => setPartnerId(val || undefined)}>
                 <SelectTrigger className="bg-zinc-900 border-zinc-800">
                   <SelectValue placeholder="Select partner" />
                 </SelectTrigger>

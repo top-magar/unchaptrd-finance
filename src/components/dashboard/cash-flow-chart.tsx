@@ -48,7 +48,7 @@ export function CashFlowChart({ transactions }: { transactions: Transaction[] })
                 contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '6px' }}
                 itemStyle={{ color: '#e4e4e7' }}
                 labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
-                formatter={(value: number) => [`Rs.${(value / 100).toLocaleString()}`, undefined]}
+                formatter={(value: any) => [`Rs.${(value / 100).toLocaleString()}`, undefined]}
               />
               <Line type="monotone" dataKey="cashIn" name="Cash In" stroke="#10b981" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="cashOut" name="Cash Out" stroke="#ef4444" strokeWidth={2} dot={false} />
