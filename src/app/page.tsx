@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
+export const dynamic = "force-dynamic";
 import { CashFlowChart } from "@/components/dashboard/cash-flow-chart";
 import { ExpenseDistribution } from "@/components/dashboard/expense-distribution";
 import { ArrowUpRight, ArrowDownRight, DollarSign, Package, TrendingUp } from "lucide-react";

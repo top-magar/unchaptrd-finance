@@ -3,6 +3,8 @@ import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function PartnersPage() {
   const partners = await getPartners();
   const transactions = await getTransactions();

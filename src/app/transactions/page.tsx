@@ -9,6 +9,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+export const dynamic = "force-dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Filter, Download } from "lucide-react";
 import { AddTransactionDialog } from "@/components/transactions/add-transaction-dialog";
