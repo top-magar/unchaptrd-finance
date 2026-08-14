@@ -37,16 +37,16 @@ export default function SettingsPage() {
         <Card className="bg-zinc-950 border-zinc-800 text-zinc-200">
           <CardHeader>
             <div className="flex items-center gap-2 mb-1">
-              <Shield className="h-5 w-5 text-zinc-400" />
+              <Shield className="h-5 w-5 text-green-500" />
               <CardTitle className="text-white">Security & Access</CardTitle>
             </div>
             <CardDescription className="text-zinc-400">Manage who can access the dashboard.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-md bg-zinc-900/50 border border-zinc-800 p-4">
-              <p className="text-sm text-zinc-400 mb-4">Authentication is currently <strong className="text-red-400 font-medium">disabled</strong>. The dashboard is accessible to anyone with the URL.</p>
-              <Button disabled className="w-full sm:w-auto bg-white text-zinc-950 hover:bg-zinc-200">
-                Setup Authentication (Coming Soon)
+            <div className="rounded-md bg-zinc-900/50 border border-green-900/30 p-4">
+              <p className="text-sm text-zinc-300 mb-4">Authentication is <strong className="text-green-500 font-medium">enabled</strong>. The dashboard is secured with an application password.</p>
+              <Button disabled className="w-full sm:w-auto bg-zinc-800 text-zinc-400 border border-zinc-700">
+                Change Password (ENV)
               </Button>
             </div>
           </CardContent>

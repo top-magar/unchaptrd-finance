@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, ReceiptText, ArrowLeftRight, Box, Tag, Users, FileText, Settings } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, ReceiptText, ArrowLeftRight, Box, Tag, Users, FileText, Settings, LogOut } from "lucide-react";
+import { toast } from "sonner";
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -17,9 +18,20 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      toast.error('Failed to logout');
+    }
+  };
 
   return (
-    <div className="hidden border-r bg-zinc-950 text-zinc-300 md:block md:w-64 md:shrink-0 md:flex-col min-h-screen">
+    <div className="hidden border-r border-zinc-800 bg-zinc-950 text-zinc-300 md:flex md:w-64 md:shrink-0 md:flex-col min-h-screen">
       <div className="flex h-16 shrink-0 items-center px-6">
         <span className="text-xl font-bold text-white tracking-widest uppercase">Unchaptrd</span>
       </div>
@@ -45,6 +57,19 @@ export function Sidebar() {
             );
           })}
         </nav>
+      </div>
+      
+      <div className="flex-shrink-0 border-t border-zinc-800 p-4">
+        <button
+          onClick={handleLogout}
+          className="group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white"
+        >
+          <LogOut
+            className="mr-3 h-5 w-5 flex-shrink-0 text-zinc-500 group-hover:text-zinc-300"
+            aria-hidden="true"
+          />
+          Logout
+        </button>
       </div>
     </div>
   );
