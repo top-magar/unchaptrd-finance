@@ -59,8 +59,18 @@ export default async function SalesPage() {
             ))}
             {sales.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center text-zinc-500">
-                  No sales recorded yet.
+                <TableCell colSpan={5} className="h-64 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800">
+                      <Plus className="h-6 w-6 text-zinc-500" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-lg font-medium text-zinc-200">No sales recorded</p>
+                      <p className="text-sm text-zinc-500 max-w-sm mx-auto">
+                        Sales tracking helps you monitor revenue and inventory depletion over time.
+                      </p>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

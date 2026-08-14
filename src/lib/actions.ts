@@ -47,12 +47,51 @@ export async function getCategories() {
   return prisma.category.findMany()
 }
 
-// Inventory
+// Inventory & Products
+export async function getProducts() {
+  return prisma.product.findMany({
+    orderBy: { createdAt: 'desc' }
+  })
+}
+
+export async function createProduct(data: {
+  sku: string;
+  name: string;
+  description?: string;
+  price: number;
+}) {
+  await prisma.product.create({
+    data
+  })
+  revalidatePath('/inventory')
+}
+
 export async function getInventoryBatches() {
   return prisma.inventoryBatch.findMany({
     include: { product: true },
     orderBy: { createdAt: 'desc' }
   })
+}
+
+export async function createInventoryBatch(data: {
+  productId: string;
+  quantityPurchased: number;
+  unitCost: number;
+  supplier?: string;
+  purchaseDate: string;
+}) {
+  await prisma.inventoryBatch.create({
+    data: {
+      productId: data.productId,
+      quantityPurchased: data.quantityPurchased,
+      quantityRemaining: data.quantityPurchased, // initially, remaining is same as purchased
+      unitCost: data.unitCost,
+      supplier: data.supplier,
+      purchaseDate: new Date(data.purchaseDate)
+    }
+  })
+  revalidatePath('/inventory')
+  revalidatePath('/')
 }
 
 // Sales

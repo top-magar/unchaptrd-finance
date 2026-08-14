@@ -1,6 +1,7 @@
 import { getTransactions } from "@/lib/actions";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
+import { Receipt } from "lucide-react";
 import { 
   Table, 
   TableBody, 
@@ -50,8 +51,18 @@ export default async function ExpensesPage() {
             ))}
             {expenses.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center text-zinc-500">
-                  No operating expenses recorded.
+                <TableCell colSpan={4} className="h-64 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800">
+                      <Receipt className="h-6 w-6 text-zinc-500" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-lg font-medium text-zinc-200">No expenses recorded</p>
+                      <p className="text-sm text-zinc-500 max-w-sm mx-auto">
+                        Track your operating expenses here. They will automatically be deducted from your Net Profit.
+                      </p>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

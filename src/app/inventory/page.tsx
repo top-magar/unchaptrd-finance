@@ -1,4 +1,4 @@
-import { getInventoryBatches } from "@/lib/actions";
+import { getInventoryBatches, getProducts } from "@/lib/actions";
 import { formatCurrency } from "@/lib/utils";
 import { 
   Table, 
@@ -8,22 +8,22 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { AddStockDialog } from "@/components/inventory/add-stock-dialog";
+import { AddProductDialog } from "@/components/inventory/add-product-dialog";
 
 export const dynamic = "force-dynamic";
 
 export default async function InventoryPage() {
   const inventory = await getInventoryBatches();
+  const products = await getProducts();
 
   return (
     <div className="flex-1 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold tracking-tight text-white">Inventory</h2>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center text-sm font-medium text-zinc-950 bg-white hover:bg-zinc-200 px-4 py-2 rounded-md transition-colors">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Stock
-          </button>
+          <AddProductDialog />
+          <AddStockDialog products={products} />
         </div>
       </div>
 
@@ -63,8 +63,18 @@ export default async function InventoryPage() {
             })}
             {inventory.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-zinc-500">
-                  No inventory recorded.
+                <TableCell colSpan={6} className="h-64 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800">
+                      <Package className="h-6 w-6 text-zinc-500" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-lg font-medium text-zinc-200">No inventory batches</p>
+                      <p className="text-sm text-zinc-500 max-w-sm mx-auto">
+                        Add your first product, then record an inventory batch to track your stock.
+                      </p>
+                    </div>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
