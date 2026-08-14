@@ -146,7 +146,7 @@ export function AddSaleDialog({ products }: { products: ProductWithStock[] }) {
           </Button>
         }
       />
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-zinc-950 border-zinc-800 text-zinc-200">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto bg-zinc-950 border-zinc-800 text-zinc-200">
         <DialogHeader>
           <DialogTitle className="text-white">Record Sale</DialogTitle>
         </DialogHeader>
