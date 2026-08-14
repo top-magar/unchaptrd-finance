@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Partner {
+  id               String        @id @default(uuid())
+  name             String
+  totalContributed Int           @default(0) // Stored in cents (or paisa for NPR)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  transactions     Transaction[]
+}
+
+model Category {
+  id           String        @id @default(uuid())
+  name         String
+  type         String        // 'EXPENSE', 'ASSET', 'INVENTORY'
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id            String    @id @default(uuid())
+  date          DateTime
+  type          String    // 'CAPITAL', 'EXPENSE', 'ASSET_PURCHASE', 'INVENTORY_PURCHASE', 'WITHDRAWAL', 'SALE'
+  amount        Int       // Stored in cents (paisa)
+  description   String
+  paymentMethod String?
+  
+  // Relations
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  
+  partnerId     String?
+  partner       Partner?  @relation(fields: [partnerId], references: [id])
+  
+  // If it's a sale, it might link to a Sale record
+  saleId        String?   @unique
+  sale          Sale?     @relation(fields: [saleId], references: [id])
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Product {
+  id          String           @id @default(uuid())
+  sku         String           @unique
+  name        String
+  description String?
+  price       Int              // Current selling price (paisa)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  batches     InventoryBatch[]
+}
+
+model InventoryBatch {
+  id                String    @id @default(uuid())
+  productId         String
+  product           Product   @relation(fields: [productId], references: [id])
+  quantityPurchased Int
+  quantityRemaining Int
+  unitCost          Int       // Cost per unit (paisa)
+  supplier          String?
+  purchaseDate      DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Sale {
+  id             String       @id @default(uuid())
+  date           DateTime     @default(now())
+  customerName   String?
+  discountAmount Int          @default(0) // Paisa
+  shippingCharge Int          @default(0) // Paisa
+  totalAmount    Int          // Final revenue (paisa)
+  
+  items          SaleItem[]
+  transaction    Transaction? // Link to the financial transaction
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model SaleItem {
+  id               String   @id @default(uuid())
+  saleId           String
+  sale             Sale     @relation(fields: [saleId], references: [id])
+  productId        String
+  quantity         Int
+  unitPrice        Int      // Price sold at (paisa)
+  unitCost         Int      // COGS from the inventory batch (paisa)
+  inventoryBatchId String?  // Optional link to which batch it depleted
+  
+  createdAt        DateTime @default(now())
+}
