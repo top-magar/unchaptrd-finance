@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import type { Category, Partner } from "@prisma/client";
+import { toast } from "sonner";
 
 export function AddTransactionDialog({ categories, partners }: { categories: Category[], partners: Partner[] }) {
   const [open, setOpen] = useState(false);
@@ -38,23 +39,33 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
     e.preventDefault();
     
     startTransition(async () => {
-      await createTransaction({
-        date,
-        type,
-        amount: Math.round(parseFloat(amount) * 100), // convert to paisa
-        description,
-        paymentMethod,
-        categoryId: categoryId || undefined,
-        partnerId: partnerId || undefined,
-      });
-      
-      setOpen(false);
-      // Reset form
-      setAmount("");
-      setDescription("");
-      setPaymentMethod("");
-      setCategoryId(undefined);
-      setPartnerId(undefined);
+      try {
+        await createTransaction({
+          date,
+          type,
+          amount: Math.round(parseFloat(amount) * 100), // convert to paisa
+          description,
+          paymentMethod,
+          categoryId: categoryId || undefined,
+          partnerId: partnerId || undefined,
+        });
+        
+        setOpen(false);
+        // Reset form
+        setAmount("");
+        setDescription("");
+        setPaymentMethod("");
+        setCategoryId(undefined);
+        setPartnerId(undefined);
+        
+        toast.success("Transaction recorded successfully", {
+          description: `Added ${type.toLowerCase()} for Rs. ${amount}`,
+        });
+      } catch (error) {
+        toast.error("Failed to record transaction", {
+          description: "An unexpected error occurred. Please try again.",
+        });
+      }
     });
   };
 

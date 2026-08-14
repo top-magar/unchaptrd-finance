@@ -71,10 +71,15 @@ export async function getDashboardStats() {
   
   const partners = await prisma.partner.findMany()
   const inventory = await prisma.inventoryBatch.findMany()
+  const sales = await prisma.sale.findMany({
+    include: { items: { include: { product: true } } }
+  })
 
   let totalCapital = 0
   let totalExpenses = 0
   let cashOutTotal = 0
+  let totalRevenue = 0
+  let totalCogs = 0
 
   transactions.forEach((tx) => {
     if (tx.type === 'CAPITAL') totalCapital += tx.amount
@@ -84,18 +89,27 @@ export async function getDashboardStats() {
     }
   })
 
-  const availableCash = totalCapital - cashOutTotal
+  sales.forEach(sale => {
+    totalRevenue += sale.totalAmount
+    sale.items.forEach(item => {
+      totalCogs += (item.quantity * item.unitCost)
+    })
+  })
+
+  const availableCash = totalCapital + totalRevenue - cashOutTotal
   const inventoryValue = inventory.reduce((acc, batch) => acc + (batch.quantityRemaining * batch.unitCost), 0)
-  const netProfit = 0 - totalExpenses
+  const netProfit = totalRevenue - totalCogs - totalExpenses
 
   return {
     transactions,
     partners,
+    sales,
     stats: {
       totalCapital,
       availableCash,
       inventoryValue,
-      netProfit
+      netProfit,
+      totalRevenue
     }
   }
 }
