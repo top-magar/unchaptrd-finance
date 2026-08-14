@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Filter, Download } from "lucide-react";
 import { AddTransactionDialog } from "@/components/transactions/add-transaction-dialog";
+import { AddCategoryDialog } from "@/components/transactions/add-category-dialog";
 
 export default async function TransactionsPage() {
   const transactions = await getTransactions();
@@ -45,6 +46,7 @@ export default async function TransactionsPage() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </button>
+          <AddCategoryDialog />
           <AddTransactionDialog categories={categories} partners={partners} />
         </div>
       </div>

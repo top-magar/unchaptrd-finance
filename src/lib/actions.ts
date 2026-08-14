@@ -103,6 +103,108 @@ export async function getSales() {
   })
 }
 
+export async function createSale(data: {
+  date: string;
+  customerName?: string;
+  items: { productId: string; quantity: number; pricePerUnit: number }[];
+  discountAmount?: number;
+  shippingCharge?: number;
+  paymentMethod: string;
+}) {
+  await prisma.$transaction(async (tx) => {
+    const saleItemsData: any[] = [];
+    
+    // 1. Deduct inventory and calculate COGS (FIFO)
+    for (const item of data.items) {
+      const batches = await tx.inventoryBatch.findMany({
+        where: { productId: item.productId, quantityRemaining: { gt: 0 } },
+        orderBy: { purchaseDate: 'asc' }
+      });
+      
+      let remainingToDeduct = item.quantity;
+      for (const batch of batches) {
+        if (remainingToDeduct <= 0) break;
+        
+        const deductAmount = Math.min(batch.quantityRemaining, remainingToDeduct);
+        
+        await tx.inventoryBatch.update({
+          where: { id: batch.id },
+          data: { quantityRemaining: batch.quantityRemaining - deductAmount }
+        });
+        
+        saleItemsData.push({
+          productId: item.productId,
+          quantity: deductAmount,
+          unitPrice: item.pricePerUnit,
+          unitCost: batch.unitCost,
+          inventoryBatchId: batch.id
+        });
+        
+        remainingToDeduct -= deductAmount;
+      }
+      
+      if (remainingToDeduct > 0) {
+        throw new Error(`Not enough stock for product ID: ${item.productId}`);
+      }
+    }
+    
+    // 2. Calculate totals
+    const subtotal = data.items.reduce((acc, item) => acc + (item.quantity * item.pricePerUnit), 0);
+    const totalAmount = subtotal + (data.shippingCharge || 0) - (data.discountAmount || 0);
+    
+    // 3. Create Sale
+    const sale = await tx.sale.create({
+      data: {
+        date: new Date(data.date),
+        customerName: data.customerName,
+        totalAmount,
+        discountAmount: data.discountAmount || 0,
+        shippingCharge: data.shippingCharge || 0,
+        items: {
+          create: saleItemsData
+        }
+      }
+    });
+    
+    // 4. Create Income Transaction
+    let revCategory = await tx.category.findFirst({ where: { name: 'Sales Revenue' } });
+    if (!revCategory) {
+      revCategory = await tx.category.create({ data: { name: 'Sales Revenue', type: 'INCOME' } });
+    }
+    
+    await tx.transaction.create({
+      data: {
+        date: new Date(data.date),
+        type: 'SALE',
+        amount: totalAmount,
+        description: `Sale #${sale.id.slice(0, 8).toUpperCase()}`,
+        paymentMethod: data.paymentMethod,
+        categoryId: revCategory.id,
+        saleId: sale.id
+      }
+    });
+  });
+  
+  revalidatePath("/sales");
+  revalidatePath("/inventory");
+  revalidatePath("/transactions");
+  revalidatePath("/");
+}
+
+// Partners Creation
+export async function createPartner(data: { name: string }) {
+  await prisma.partner.create({ data });
+  revalidatePath('/partners');
+  revalidatePath('/transactions');
+}
+
+// Category Creation
+export async function createCategory(data: { name: string; type: string }) {
+  await prisma.category.create({ data });
+  revalidatePath('/transactions');
+}
+
+
 // Dashboard Aggregation Logic
 export async function getDashboardStats() {
   const transactions = await prisma.transaction.findMany({
@@ -162,4 +264,25 @@ export async function getDashboardStats() {
       totalRevenue
     }
   }
+}
+
+// Deletion Actions
+export async function deleteTransaction(id: string) {
+  const tx = await prisma.transaction.findUnique({ where: { id } });
+  if (tx?.saleId) {
+    throw new Error("Cannot delete a transaction linked to a Sale. Delete the Sale instead.");
+  }
+  
+  await prisma.transaction.delete({ where: { id } });
+  revalidatePath('/');
+  revalidatePath('/transactions');
+  revalidatePath('/expenses');
+  revalidatePath('/partners');
+}
+
+export async function deleteProduct(id: string) {
+  // Products with inventory batches shouldn't be deleted easily without cascading
+  // But for simple operations we allow it
+  await prisma.product.delete({ where: { id } });
+  revalidatePath('/inventory');
 }

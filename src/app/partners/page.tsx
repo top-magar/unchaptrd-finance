@@ -2,6 +2,7 @@ import { getPartners, getTransactions } from "@/lib/actions";
 import { formatCurrency } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import { AddPartnerDialog } from "@/components/partners/add-partner-dialog";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function PartnersPage() {
     <div className="flex-1 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold tracking-tight text-white">Partners & Capital</h2>
+        <AddPartnerDialog />
       </div>
 
       {partners.length === 0 ? (
