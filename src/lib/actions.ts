@@ -71,9 +71,19 @@ export async function getDashboardStats() {
   
   const partners = await prisma.partner.findMany()
   const inventory = await prisma.inventoryBatch.findMany()
-  const sales = await prisma.sale.findMany({
-    include: { items: { include: { product: true } } }
+  const products = await prisma.product.findMany()
+  const salesRaw = await prisma.sale.findMany({
+    include: { items: true }
   })
+
+  // Map products to sale items since the relation isn't in Prisma schema yet
+  const sales = salesRaw.map(sale => ({
+    ...sale,
+    items: sale.items.map(item => ({
+      ...item,
+      product: products.find(p => p.id === item.productId) || { id: item.productId, name: 'Unknown Product', price: 0 } as any
+    }))
+  }))
 
   let totalCapital = 0
   let totalExpenses = 0
