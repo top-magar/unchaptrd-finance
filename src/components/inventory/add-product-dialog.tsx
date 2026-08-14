@@ -22,6 +22,7 @@ export function AddProductDialog() {
   const [sku, setSku] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [price, setPrice] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,6 +34,7 @@ export function AddProductDialog() {
           sku,
           name,
           description: description || undefined,
+          imageUrl: imageUrl || undefined,
           price: Math.round(parseFloat(price) * 100), // convert to paisa
         });
         
@@ -41,6 +43,7 @@ export function AddProductDialog() {
         setSku("");
         setName("");
         setDescription("");
+        setImageUrl("");
         setPrice("");
         
         toast.success("Product created successfully", {
@@ -101,6 +104,17 @@ export function AddProductDialog() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g. 100% cotton, relaxed fit"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="imageUrl">Image URL (Optional)</Label>
+            <Input
+              id="imageUrl"
+              className="bg-zinc-900 border-zinc-800"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://example.com/image.jpg"
             />
           </div>
 

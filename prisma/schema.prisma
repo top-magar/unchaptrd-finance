@@ -52,6 +52,7 @@ model Product {
   sku         String           @unique
   name        String
   description String?
+  imageUrl    String?          // Optional image for visual catalog
   price       Int              // Current selling price (paisa)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt

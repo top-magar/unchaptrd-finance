@@ -1,15 +1,6 @@
 import { getSales } from "@/lib/actions";
-import { formatCurrency } from "@/lib/utils";
-import { format } from "date-fns";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import { SalesTable } from "@/components/sales/sales-table";
 
 export const dynamic = "force-dynamic";
 
@@ -28,55 +19,7 @@ export default async function SalesPage() {
         </div>
       </div>
 
-      <div className="rounded-md border border-zinc-800 bg-zinc-900/50">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-zinc-800 hover:bg-transparent">
-              <TableHead className="text-zinc-400 font-medium w-[120px]">Date</TableHead>
-              <TableHead className="text-zinc-400 font-medium">Customer</TableHead>
-              <TableHead className="text-zinc-400 font-medium text-right">Discount</TableHead>
-              <TableHead className="text-zinc-400 font-medium text-right">Shipping</TableHead>
-              <TableHead className="text-zinc-400 font-medium text-right">Total Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sales.map((sale) => (
-              <TableRow key={sale.id} className="border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                <TableCell className="font-medium text-zinc-300">
-                  {format(sale.date, 'MMM dd, yyyy')}
-                </TableCell>
-                <TableCell className="text-zinc-300">{sale.customerName}</TableCell>
-                <TableCell className="text-right text-zinc-400">
-                  {formatCurrency(sale.discountAmount)}
-                </TableCell>
-                <TableCell className="text-right text-zinc-400">
-                  {formatCurrency(sale.shippingCharge)}
-                </TableCell>
-                <TableCell className="text-right font-medium text-emerald-400">
-                  +{formatCurrency(sale.totalAmount)}
-                </TableCell>
-              </TableRow>
-            ))}
-            {sales.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} className="h-64 text-center">
-                  <div className="flex flex-col items-center justify-center space-y-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800">
-                      <Plus className="h-6 w-6 text-zinc-500" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-lg font-medium text-zinc-200">No sales recorded</p>
-                      <p className="text-sm text-zinc-500 max-w-sm mx-auto">
-                        Sales tracking helps you monitor revenue and inventory depletion over time.
-                      </p>
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <SalesTable sales={sales} />
     </div>
   );
 }
