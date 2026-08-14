@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { AddStockDialog } from "@/components/inventory/add-stock-dialog";
 import { AddProductDialog } from "@/components/inventory/add-product-dialog";
+import { Plus, Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 

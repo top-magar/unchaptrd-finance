@@ -70,12 +70,14 @@ export function AddStockDialog({ products }: { products: Product[] }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="flex items-center text-sm font-medium text-zinc-950 bg-white hover:bg-zinc-200 px-4 py-2 rounded-md transition-colors">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Stock
-        </button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <button className="flex items-center text-sm font-medium text-zinc-950 bg-white hover:bg-zinc-200 px-4 py-2 rounded-md transition-colors">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Stock
+          </button>
+        }
+      />
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-zinc-200">
         <DialogHeader>
           <DialogTitle className="text-white">Record New Inventory Batch</DialogTitle>
@@ -83,7 +85,7 @@ export function AddStockDialog({ products }: { products: Product[] }) {
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="grid gap-2">
             <Label htmlFor="product">Product</Label>
-            <Select value={productId} onValueChange={setProductId}>
+            <Select value={productId} onValueChange={(val) => setProductId(val || "")}>
               <SelectTrigger className="bg-zinc-900 border-zinc-800">
                 <SelectValue placeholder="Select product" />
               </SelectTrigger>

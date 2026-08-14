@@ -56,12 +56,14 @@ export function AddProductDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="flex items-center text-sm font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 hover:text-white px-4 py-2 rounded-md transition-colors">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <button className="flex items-center text-sm font-medium text-zinc-400 bg-zinc-900 border border-zinc-800 hover:text-white px-4 py-2 rounded-md transition-colors">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </button>
+        }
+      />
       <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-zinc-200">
         <DialogHeader>
           <DialogTitle className="text-white">Create New Product</DialogTitle>
