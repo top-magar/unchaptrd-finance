@@ -80,18 +80,36 @@ export async function createInventoryBatch(data: {
   unitCost: number;
   supplier?: string;
   purchaseDate: string;
+  recordPayment?: boolean;
+  paymentMethod?: string;
 }) {
-  await prisma.inventoryBatch.create({
-    data: {
-      productId: data.productId,
-      quantityPurchased: data.quantityPurchased,
-      quantityRemaining: data.quantityPurchased, // initially, remaining is same as purchased
-      unitCost: data.unitCost,
-      supplier: data.supplier,
-      purchaseDate: new Date(data.purchaseDate)
+  await prisma.$transaction(async (tx) => {
+    await tx.inventoryBatch.create({
+      data: {
+        productId: data.productId,
+        quantityPurchased: data.quantityPurchased,
+        quantityRemaining: data.quantityPurchased,
+        unitCost: data.unitCost,
+        supplier: data.supplier,
+        purchaseDate: new Date(data.purchaseDate)
+      }
+    });
+
+    if (data.recordPayment && data.paymentMethod) {
+      await tx.transaction.create({
+        data: {
+          date: new Date(data.purchaseDate),
+          type: 'INVENTORY_PURCHASE',
+          amount: data.quantityPurchased * data.unitCost,
+          description: `Inventory Purchase from ${data.supplier || 'Supplier'}`,
+          paymentMethod: data.paymentMethod,
+        }
+      });
     }
-  })
+  });
+
   revalidatePath('/inventory')
+  revalidatePath('/transactions')
   revalidatePath('/')
 }
 
@@ -235,6 +253,7 @@ export async function getDashboardStats() {
 
   transactions.forEach((tx) => {
     if (tx.type === 'CAPITAL') totalCapital += tx.amount
+    if (tx.type === 'INCOME' && !tx.saleId) totalRevenue += tx.amount // Non-sale income
     if (['EXPENSE'].includes(tx.type)) totalExpenses += tx.amount
     if (['EXPENSE', 'ASSET_PURCHASE', 'INVENTORY_PURCHASE', 'WITHDRAWAL'].includes(tx.type)) {
       cashOutTotal += tx.amount

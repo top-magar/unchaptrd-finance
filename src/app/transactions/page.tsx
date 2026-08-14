@@ -28,6 +28,7 @@ export default async function TransactionsPage() {
       case 'ASSET_PURCHASE': return <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20">Asset</Badge>;
       case 'INVENTORY_PURCHASE': return <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-amber-500/20">Inventory</Badge>;
       case 'SALE': return <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-emerald-500/20">Sale</Badge>;
+      case 'INCOME': return <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-emerald-500/20">Income</Badge>;
       case 'WITHDRAWAL': return <Badge className="bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 border-purple-500/20">Withdrawal</Badge>;
       default: return <Badge variant="outline">{type}</Badge>;
     }

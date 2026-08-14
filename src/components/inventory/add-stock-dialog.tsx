@@ -32,11 +32,17 @@ export function AddStockDialog({ products }: { products: Product[] }) {
   const [unitCost, setUnitCost] = useState("");
   const [supplier, setSupplier] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split("T")[0]);
+  const [recordPayment, setRecordPayment] = useState(true);
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!productId) {
       toast.error("Please select a product");
+      return;
+    }
+    if (recordPayment && !paymentMethod) {
+      toast.error("Please enter a payment method");
       return;
     }
     
@@ -48,6 +54,8 @@ export function AddStockDialog({ products }: { products: Product[] }) {
           unitCost: Math.round(parseFloat(unitCost) * 100), // convert to paisa
           supplier,
           purchaseDate,
+          recordPayment,
+          paymentMethod: recordPayment ? paymentMethod : undefined,
         });
         
         setOpen(false);
@@ -56,6 +64,8 @@ export function AddStockDialog({ products }: { products: Product[] }) {
         setQuantityPurchased("");
         setUnitCost("");
         setSupplier("");
+        setRecordPayment(true);
+        setPaymentMethod("");
         
         toast.success("Stock added successfully", {
           description: `Added ${quantityPurchased} units`,
@@ -155,6 +165,32 @@ export function AddStockDialog({ products }: { products: Product[] }) {
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
             />
+          </div>
+
+          <div className="flex flex-col space-y-4 pt-2">
+            <label className="flex items-center space-x-2 text-sm text-zinc-300">
+              <input
+                type="checkbox"
+                checked={recordPayment}
+                onChange={(e) => setRecordPayment(e.target.checked)}
+                className="rounded border-zinc-800 bg-zinc-900 text-white focus:ring-offset-zinc-950"
+              />
+              <span>Also record as a cash payment</span>
+            </label>
+            
+            {recordPayment && (
+              <div className="grid gap-2">
+                <Label htmlFor="paymentMethod">Payment Method</Label>
+                <Input
+                  id="paymentMethod"
+                  required={recordPayment}
+                  className="bg-zinc-900 border-zinc-800"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  placeholder="e.g. Bank Transfer"
+                />
+              </div>
+            )}
           </div>
 
           <div className="pt-2 flex justify-end">

@@ -46,8 +46,8 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
           amount: Math.round(parseFloat(amount) * 100), // convert to paisa
           description,
           paymentMethod,
-          categoryId: categoryId || undefined,
-          partnerId: partnerId || undefined,
+          categoryId: (type === "EXPENSE" || type === "INCOME") ? categoryId : undefined,
+          partnerId: (type === "CAPITAL" || type === "WITHDRAWAL") ? partnerId : undefined,
         });
         
         setOpen(false);
@@ -91,6 +91,7 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
+                <SelectItem value="INCOME">Income / Revenue</SelectItem>
                 <SelectItem value="EXPENSE">Operating Expense</SelectItem>
                 <SelectItem value="CAPITAL">Capital Contribution</SelectItem>
                 <SelectItem value="ASSET_PURCHASE">Asset Purchase</SelectItem>
@@ -138,7 +139,7 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
             />
           </div>
 
-          {type === "EXPENSE" && (
+          {(type === "EXPENSE" || type === "INCOME") && (
             <div className="grid gap-2">
               <Label htmlFor="category">Category</Label>
               <Select value={categoryId} onValueChange={(val) => setCategoryId(val || undefined)}>
@@ -146,17 +147,20 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
-                  {categories.map((c) => (
+                  {categories.filter(c => c.type === type).map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
                     </SelectItem>
                   ))}
+                  {categories.filter(c => c.type === type).length === 0 && (
+                    <SelectItem value="none" disabled>No categories found</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
           )}
 
-          {type === "CAPITAL" && (
+          {(type === "CAPITAL" || type === "WITHDRAWAL") && (
             <div className="grid gap-2">
               <Label htmlFor="partner">Partner</Label>
               <Select value={partnerId} onValueChange={(val) => setPartnerId(val || undefined)}>
@@ -169,6 +173,9 @@ export function AddTransactionDialog({ categories, partners }: { categories: Cat
                       {p.name}
                     </SelectItem>
                   ))}
+                  {partners.length === 0 && (
+                    <SelectItem value="none" disabled>No partners found</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
